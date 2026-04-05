@@ -19,57 +19,6 @@ Backtesting — Sharpe ratio, accuracy, and P&L evaluation via vectorbt
 Retraining loop — feedback from backtesting triggers automated model retraining
 
 
-Architecture
-┌─────────────────────────────────────────────────────────────────────┐
-│                          Data Ingestion                             │
-│   yfinance / Polygon.io          NewsAPI / Finnhub                  │
-└───────────┬─────────────────────────────┬───────────────────────────┘
-            │                             │
-            ▼                             ▼
-┌───────────────────┐          ┌───────────────────────┐
-│ Stock Preprocessing│          │   Text Preprocessing  │
-│ Normalize, scale  │          │   Clean, deduplicate  │
-└────────┬──────────┘          └──────────┬────────────┘
-         │                                │
-         ▼                                ▼
-┌───────────────────┐          ┌───────────────────────┐
-│ Feature Engineering│          │     Tokenization      │
-│ RSI, MACD, BB     │          │  BPE / WordPiece      │
-└────────┬──────────┘          └──────────┬────────────┘
-         │                                │
-         ▼                                ▼
-┌───────────────────┐          ┌───────────────────────┐
-│ Numeric Embedding │          │    Text Embedding     │
-│ Sliding windows   │          │    FinBERT vectors    │
-└────────┬──────────┘          └──────────┬────────────┘
-         │                                │
-         └──────────────┬─────────────────┘
-                        ▼
-              ┌──────────────────┐
-              │  Feature Fusion  │
-              │  Concat / Attn   │
-              └────────┬─────────┘
-                       ▼
-              ┌──────────────────┐
-              │  Prediction Model│
-              │  LSTM/Transformer│
-              └────────┬─────────┘
-                       ▼
-              ┌──────────────────┐
-              │    Output        │
-              │  Price direction │
-              └────────┬─────────┘
-                       ▼
-              ┌──────────────────┐
-              │  Backtesting     │◄── retrain loop
-              │  Sharpe, P&L     │
-              └────────┬─────────┘
-                       ▼
-              ┌──────────────────┐
-              │  Trade Signal    │
-              │  Buy / Sell / Hold│
-              └──────────────────┘
-
 Tech Stack
 LayerToolsStock datayfinance, polygon-api-clientNews datanewsapi-python, finnhub-pythonPreprocessingpandas, scikit-learnTechnical indicatorstaTokenizationHuggingFace tokenizersText embeddingProsusAI/finbert via transformersModelingPyTorch, XGBoost, LightGBMBacktestingvectorbtOrchestrationApache Airflow (optional)
 
